@@ -1,0 +1,1 @@
+console.log('Script loaded and executed in the browser content');

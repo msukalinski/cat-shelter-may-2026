@@ -2,11 +2,35 @@ import http from 'http';
 import fs from 'fs/promises';
 
 const server = http.createServer(async (req, res) => {
-    const homePage = await fs.readFile('./src/views/home/index.html', 'utf-8');
+    if (req.url.startsWith('/styles')) {
+        const cssContent = await fs.readFile('./src/styles/site.css', 'utf-8');
+        res.writeHead(200, { 'Content-Type': 'text/css' });
+        res.write(cssContent);
+        return res.end();
+    }
 
-    res.writeHead(200, { 'content-type': 'text/html' });
-    res.write(homePage);
+    if (req.url === '/js/script.js') {
+        const jsContent = await fs.readFile('./src/js/script.js', 'utf-8');
 
+        res.writeHead(200, { 'Content-Type': 'text/css' });
+        res.write(jsContent);
+        return res.end();
+    }
+
+    let htmlContent = '';
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+
+    if (req.url === '/') {
+        htmlContent = await fs.readFile('./src/views/home/index.html', 'utf-8');
+    } else if (req.url === '/cats/add-breed') {
+        htmlContent = await fs.readFile('./src/views/addBreed.html', 'utf-8');
+    } else if (req.url === '/cats/add-cat') {
+        htmlContent = await fs.readFile('./src/views/addCat.html', 'utf-8');
+    } else {
+        htmlContent = await fs.readFile('./src/views/notFound.html');
+    }
+
+    res.write(htmlContent);
     res.end();
 });
 
