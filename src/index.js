@@ -20,7 +20,8 @@ const server = http.createServer(async (req, res) => {
             addBreed(breedName);
         });
 
-        return res.end();
+        // REDIRECT TO HOME PAGE AFTER ADDING THE BREED
+        return res.writeHead(302, { Location: '/' }).end();
     }
 
     if (req.url.startsWith('/styles')) {
