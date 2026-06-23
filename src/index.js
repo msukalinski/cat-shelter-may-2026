@@ -1,8 +1,28 @@
 import http from 'http';
 import fs from 'fs/promises';
 import cats from '../cats.js';
+import { readBreeds, addBreed } from '../breedService.js';
 
 const server = http.createServer(async (req, res) => {
+    console.log(readBreeds())
+    if (req.method === 'POST' && req.url === '/cats/add-breed') {
+        let body = '';
+
+        req.on('data', (chunk) => {
+            body += chunk;
+        });
+
+        req.on('end', async () => {
+            const formData = new URLSearchParams(body);
+            const breedName = formData.get('breed');
+
+// TO CHECK IF THERE IS A BREED THAT WE WANT TO ADD AND IF SO TO THROW NEW ERROR
+            addBreed(breedName);
+        });
+
+        return res.end();
+    }
+
     if (req.url.startsWith('/styles')) {
         const cssContent = await fs.readFile('./src/styles/site.css', 'utf-8');
         res.writeHead(200, { 'Content-Type': 'text/css' });
@@ -58,5 +78,3 @@ async function renderHomePage() {
 }
 
 server.listen(5000, () => console.log('Server is listening on http://localhost:5000...'));
-
-show cats dynamically 
