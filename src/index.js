@@ -1,6 +1,5 @@
 import http from 'http';
 import fs from 'fs/promises';
-import cats from '../cats.js';
 import { addCat, readCats } from '../catService.js';
 import { readBreeds, addBreed } from '../breedService.js';
 
@@ -81,6 +80,7 @@ async function renderHomePage() {
             </ul>
         </li>`;
 
+        const cats = readCats();
     const catsContent = `<ul>${cats.map(cat => catTemplate(cat)).join('\n')}</ul>`;
 
     const result = htmlContent.replace('{{cats}}', catsContent);
