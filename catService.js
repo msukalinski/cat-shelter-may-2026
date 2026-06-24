@@ -19,4 +19,13 @@ export function addCat(catData) {
 
 export function getCatById(catId) {
     return cats.find(cat => cat.id === catId);
+};
+
+export function editCat(catId, catData) {
+    const catIndex = cats.findIndex(cat => cat.id === catId);
+
+    cats[catIndex] = {
+        id: catId,
+        ...catData,
+    };
 }
