@@ -4,7 +4,7 @@ import { getBreedById } from "./breedService.js";
 
 export function readCats() {
     return cats;
-}
+};
 
 export function addCat(catData) {
     const breedName = getBreedById(catData.breed)?.name || 'Unknown Breed';
@@ -15,4 +15,8 @@ export function addCat(catData) {
     };
 
     cats.push(newCat);
+};
+
+export function getCatById(catId) {
+    return cats.find(cat => cat.id === catId);
 }
