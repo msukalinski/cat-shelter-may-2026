@@ -1,7 +1,7 @@
 import http from 'http';
 import fs from 'fs/promises';
-import { addCat, getCatById, readCats, editCat } from '../catService.js';
-import { readBreeds, addBreed, getBreedByName } from '../breedService.js';
+import { addCat, getCatById, readCats, editCat, deleteCat } from '../catService.js';
+import { addBreed, readBreeds, getBreedByName } from '../breedService.js';
 
 const server = http.createServer(async (req, res) => {
     if (req.method === 'POST' && req.url === '/cats/add-breed') {
@@ -49,6 +49,14 @@ const server = http.createServer(async (req, res) => {
         return res.writeHead(302, { Location: '/' }).end();
     }
 
+    if (req.method === 'POST' && req.url.startsWith('/cats/new-home')) {
+        const catId = req.url.split('/').pop();
+
+        deleteCat(catId);
+
+        return res.writeHead(302, { Location: '/' }).end()
+    }
+
     if (req.url.startsWith('/styles')) {
         const cssContent = await fs.readFile('./src/styles/site.css', 'utf-8');
         res.writeHead(200, { 'Content-Type': 'text/css' });
@@ -69,6 +77,11 @@ const server = http.createServer(async (req, res) => {
 
     if (req.url === '/') {
         htmlContent = await renderHomePage();
+    } else if (req.url.startsWith('/search')) {
+        const urlParams = new URLSearchParams(req.url.split('?')[1]);
+        const name = urlParams.get('name');
+
+        htmlContent = await renderHomePage({name});
     } else if (req.url === '/cats/add-breed') {
         htmlContent = await fs.readFile('./src/views/addBreed.html', 'utf-8');
     } else if (req.url === '/cats/add-cat') {
@@ -88,7 +101,7 @@ const server = http.createServer(async (req, res) => {
     res.end();
 });
 
-async function renderHomePage() {
+async function renderHomePage(filter = {}) {
     let htmlContent = await fs.readFile('./src/views/home/index.html', 'utf-8');
 
     const catTemplate = (cat) => `
@@ -103,7 +116,8 @@ async function renderHomePage() {
             </ul>
         </li>`;
 
-    const cats = readCats();
+    const cats = readCats(filter);
+
     const catsContent = `<ul>${cats.map(cat => catTemplate(cat)).join('\n')}</ul>`;
 
     const result = htmlContent.replace('{{cats}}', catsContent);
@@ -138,7 +152,9 @@ async function renderEditCatPage(catId) {
 
 async function renderNewHomePage(catId) {
     const cat = getCatById(catId);
+    console.log(cat);
     const breed = getBreedByName(cat.breed);
+    console.log(breed);
 
     if (!cat) {
         return renderNotFoundPage();

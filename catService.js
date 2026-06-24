@@ -2,8 +2,13 @@ import cats from "./cats.js";
 import { v4 } from "uuid";
 import { getBreedById } from "./breedService.js";
 
-export function readCats() {
-    return cats;
+export function readCats(filter = {}) {
+    let result = cats;
+
+    if (filter.name) {
+        result = result.filter(cat => cat.name.toLowerCase().includes(filter.name.toLowerCase()));
+    }
+    return result;
 };
 
 export function addCat(catData) {
@@ -29,4 +34,12 @@ export function editCat(catId, catData) {
         ...catData,
         breed: getBreedById(catData.breed)?.name || 'Unknown Breed'
     };
+}
+
+export function deleteCat(catId) {
+    const catIndex = cats.find(cat => cat.id === catId);
+
+    if (catIndex !== -1) {
+        cats.splice(catIndex, 1);
+    }
 }
