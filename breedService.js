@@ -17,3 +17,7 @@ export function addBreed(breedName) {
 export function getBreedById(breedId) {
     return catBreeds.find(breed => breed.id === breedId);
 }
+
+export function getBreedByName(breedName) {
+    return catBreeds.find(breed => breed.name === breedName);
+}

@@ -27,5 +27,6 @@ export function editCat(catId, catData) {
     cats[catIndex] = {
         id: catId,
         ...catData,
+        breed: getBreedById(catData.breed)?.name || 'Unknown Breed'
     };
 }
